@@ -6,14 +6,17 @@
       "use": "@vercel/static-build",
       "config": {
         "nodeVersion": "18.x",
-        "zeroConfig": true
+        "distDir": "dist"
       }
     }
   ],
   "routes": [
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/dist/$1"
+      "dest": "/$1"
     }
   ]
 }
