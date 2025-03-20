@@ -10,7 +10,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "nodeVersion": "16.14.0"
+        "nodeVersion": "18.x"
       }
     }
   ],
