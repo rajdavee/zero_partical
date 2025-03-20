@@ -1,8 +1,6 @@
-import ready from 'domready';
-
 import App from './App';
 
-ready(() => {
+document.addEventListener('DOMContentLoaded', () => {
 	window.app = new App();
 	window.app.init();
 });

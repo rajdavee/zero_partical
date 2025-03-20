@@ -1,11 +1,9 @@
 import * as THREE from 'three';
-
 import TouchTexture from './TouchTexture';
 
 const glslify = require('glslify');
 
 export default class Particles {
-	
 	constructor(webgl) {
 		this.webgl = webgl;
 		this.container = new THREE.Object3D();
@@ -39,7 +37,7 @@ export default class Particles {
 		let originalColors;
 
 		if (discard) {
-			// discard pixels darker than threshold #22
+			// discard pixels darker than threshold
 			numVisible = 0;
 			threshold = 34;
 
@@ -58,8 +56,6 @@ export default class Particles {
 			for (let i = 0; i < this.numPoints; i++) {
 				if (originalColors[i * 4 + 0] > threshold) numVisible++;
 			}
-
-			// console.log('numVisible', numVisible, this.numPoints);
 		}
 
 		const uniforms = {
@@ -78,7 +74,6 @@ export default class Particles {
 			fragmentShader: glslify(require('../../../shaders/particle.frag')),
 			depthTest: false,
 			transparent: true,
-			// blending: THREE.AdditiveBlending
 		});
 
 		const geometry = new THREE.InstancedBufferGeometry();
@@ -128,7 +123,6 @@ export default class Particles {
 	}
 
 	initTouch() {
-		// create only once
 		if (!this.touch) this.touch = new TouchTexture(this);
 		this.object3D.material.uniforms.uTouch.value = this.touch.texture;
 	}
@@ -143,7 +137,6 @@ export default class Particles {
 
 	addListeners() {
 		this.handlerInteractiveMove = this.onInteractiveMove.bind(this);
-
 		this.webgl.interactive.addListener('interactive-move', this.handlerInteractiveMove);
 		this.webgl.interactive.objects.push(this.hitArea);
 		this.webgl.interactive.enable();
@@ -151,7 +144,6 @@ export default class Particles {
 
 	removeListeners() {
 		this.webgl.interactive.removeListener('interactive-move', this.handlerInteractiveMove);
-		
 		const index = this.webgl.interactive.objects.findIndex(obj => obj === this.hitArea);
 		this.webgl.interactive.objects.splice(index, 1);
 		this.webgl.interactive.disable();
@@ -164,7 +156,6 @@ export default class Particles {
 	update(delta) {
 		if (!this.object3D) return;
 		if (this.touch) this.touch.update();
-
 		this.object3D.material.uniforms.uTime.value += delta;
 	}
 
@@ -177,42 +168,12 @@ export default class Particles {
 		this.addListeners();
 	}
 
-	hide(_destroy, time = 0.8) {
-		return new Promise((resolve, reject) => {
-			TweenLite.to(this.object3D.material.uniforms.uRandom, time, { value: 5.0, onComplete: () => {
-				if (_destroy) this.destroy();
-				resolve();
-			} });
-			TweenLite.to(this.object3D.material.uniforms.uDepth, time, { value: -20.0, ease: Quad.easeIn });
-			TweenLite.to(this.object3D.material.uniforms.uSize, time * 0.8, { value: 0.0 });
-
-			this.removeListeners();
-		});
-	}
-
-	destroy() {
-		if (!this.object3D) return;
-
-		this.object3D.parent.remove(this.object3D);
-		this.object3D.geometry.dispose();
-		this.object3D.material.dispose();
-		this.object3D = null;
-
-		if (!this.hitArea) return;
-
-		this.hitArea.parent.remove(this.hitArea);
-		this.hitArea.geometry.dispose();
-		this.hitArea.material.dispose();
-		this.hitArea = null;
-	}
-
 	// ---------------------------------------------------------------------------------------------
 	// EVENT HANDLERS
 	// ---------------------------------------------------------------------------------------------
 
 	resize() {
 		if (!this.object3D) return;
-
 		const scale = this.webgl.fovHeight / this.height;
 		this.object3D.scale.set(scale, scale, 1);
 		this.hitArea.scale.set(scale, scale, 1);

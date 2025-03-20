@@ -15,6 +15,31 @@ module.exports = {
 		filename: 'scripts/[name].[chunkhash].js',
 		chunkFilename: 'scripts/[name].[chunkhash].js',
 	},
+	optimization: {
+		// Add optimization settings
+		minimize: true,
+		splitChunks: {
+			chunks: 'all',
+			minSize: 30000,
+			maxSize: 0,
+			minChunks: 1,
+			maxAsyncRequests: 5,
+			maxInitialRequests: 3,
+			automaticNameDelimiter: '~',
+			name: true,
+			cacheGroups: {
+				vendors: {
+					test: /[\\/]node_modules[\\/]/,
+					priority: -10
+				},
+				default: {
+					minChunks: 2,
+					priority: -20,
+					reuseExistingChunk: true
+				}
+			}
+		}
+	},
 	module: {
 		rules: [
 			{
@@ -36,20 +61,10 @@ module.exports = {
 				test: /three\/examples\/js/,
 				use: 'imports-loader?THREE=three'
 			},
-			/*
 			{
-				test: /\.css$/,
-				use: ['style-loader', 'css-loader']
-			},
-			{
-				test: /\.(woff|woff2|eot|ttf|otf)$/,
-				use: 'file-loader'
-			},
-			{
-				test: /\.(jpe?g|png|gif)$/i,
+				test: /\.svg$/,
 				use: 'file-loader'
 			}
-			*/
 		]
 	},
 	resolve: {
@@ -69,6 +84,14 @@ module.exports = {
 		]),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
+			minify: {
+				collapseWhitespace: true,
+				removeComments: true,
+				removeRedundantAttributes: true,
+				removeScriptTypeAttributes: true,
+				removeStyleLinkTypeAttributes: true,
+				useShortDoctype: true
+			}
 		}),
 		new webpack.ProvidePlugin({
 			'THREE': 'three'
