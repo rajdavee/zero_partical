@@ -11,10 +11,8 @@
   "license": "MIT",
   "sideEffects": false,
   "scripts": {
-    "build": "set NODE_OPTIONS=--openssl-legacy-provider && webpack -p --config config/prod.js",
-    "build:unix": "NODE_OPTIONS=--openssl-legacy-provider webpack -p --config config/prod.js",
-    "start": "set NODE_OPTIONS=--openssl-legacy-provider && webpack-dev-server --config config/dev.js",
-    "start:unix": "NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server --config config/dev.js"
+    "build": "webpack -p --config config/prod.js",
+    "start": "webpack-dev-server --config config/dev.js"
   },
   "dependencies": {
     "browser-detect": "^0.2.28",
