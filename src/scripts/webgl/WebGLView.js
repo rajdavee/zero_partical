@@ -33,6 +33,7 @@ export default class WebGLView {
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.setPixelRatio(window.devicePixelRatio);
+		this.renderer.setClearColor(0x000000, 1); // Set renderer background to pure black
 		document.querySelector('.container').appendChild(this.renderer.domElement);
 
 		// clock
