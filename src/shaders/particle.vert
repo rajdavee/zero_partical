@@ -19,6 +19,9 @@ uniform vec2 uTextureSize;
 uniform sampler2D uTexture;
 uniform sampler2D uTouch;
 
+uniform float uTransitionState;
+uniform float uScatter;
+
 varying vec2 vPUv;
 varying vec2 vUv;
 
@@ -37,15 +40,22 @@ void main() {
 	vec4 colA = texture2D(uTexture, puv);
 	float grey = colA.r * 0.21 + colA.g * 0.71 + colA.b * 0.07;
 
-	// displacement
-	vec3 displaced = offset;
-	// randomise
-	displaced.xy += vec2(random(pindex) - 0.5, random(offset.x + pindex) - 0.5) * uRandom;
-	displaced.z += random(pindex) * uDepth;
-	// center
-	displaced.xy -= uTextureSize * 0.5;
+	// Initial random position
+	vec3 scattered = vec3(
+		(random(pindex) - 0.5) * uScatter,
+		(random(offset.x + pindex) - 0.5) * uScatter,
+		random(pindex) * uDepth * 2.0
+	);
 
-	// touch
+	// Logo position
+	vec3 centered = offset;
+	centered.xy -= uTextureSize * 0.5;
+	centered.z += random(pindex) * uDepth;
+
+	// Transition between scattered and centered
+	vec3 displaced = mix(scattered, centered, uTransitionState);
+
+	// Add touch interaction
 	float t = texture2D(uTouch, puv).r;
 	displaced.z += t * 10.0;
 	displaced.x += cos(angle) * t * 10.0;

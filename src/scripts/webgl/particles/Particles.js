@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import TouchTexture from './TouchTexture';
+import { TweenLite } from 'gsap/TweenMax';
 
 const glslify = require('glslify');
 
@@ -66,6 +67,8 @@ export default class Particles {
 			uTextureSize: { value: new THREE.Vector2(this.width, this.height) },
 			uTexture: { value: this.texture },
 			uTouch: { value: null },
+			uTransitionState: { value: 0.0 }, // New uniform for transition
+			uScatter: { value: window.innerHeight / 2 }, // Initial scatter amount
 		};
 
 		const material = new THREE.RawShaderMaterial({
@@ -159,11 +162,22 @@ export default class Particles {
 		this.object3D.material.uniforms.uTime.value += delta;
 	}
 
-	show(time = 1.0) {
-		// reset
-		TweenLite.fromTo(this.object3D.material.uniforms.uSize, time, { value: 0.5 }, { value: 1.5 });
-		TweenLite.to(this.object3D.material.uniforms.uRandom, time, { value: 2.0 });
-		TweenLite.fromTo(this.object3D.material.uniforms.uDepth, time * 1.5, { value: 40.0 }, { value: 4.0 });
+	show(time = 3.0) {
+		// Initial scattered state
+		this.object3D.material.uniforms.uScatter.value = window.innerHeight / 2;
+		this.object3D.material.uniforms.uTransitionState.value = 0;
+		this.object3D.material.uniforms.uSize.value = 1.5;
+
+		// Animate to logo formation
+		TweenLite.to(this.object3D.material.uniforms.uTransitionState, time, {
+			value: 1.0,
+			ease: 'Power4.easeInOut'
+		});
+		
+		TweenLite.to(this.object3D.material.uniforms.uScatter, time, {
+			value: 0,
+			ease: 'Power4.easeInOut'
+		});
 
 		this.addListeners();
 	}
